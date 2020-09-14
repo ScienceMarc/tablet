@@ -6,6 +6,7 @@ Event currentEvent = new Event();
 List<Line> lines = new ArrayList<Line>();
 List<Event> events = new ArrayList<Event>();
 Tool selectedTool = Tool.PEN;
+Tool mode2Tool = Tool.PEN;
 
 PImage penIcon, eraserIcon;
 
@@ -49,6 +50,7 @@ void setup() {
     frameRate(120);
     noCursor();
     stroke(0);
+    textSize(32);
     tablet = new Tablet(this);
 
     penIcon = loadImage("pen.png");
@@ -60,7 +62,7 @@ boolean pMousePressed = false;
 
 void draw() {
     background(255);
-    selectedTool = tablet.getPenKind() == 3 ? Tool.ERASER : Tool.PEN;
+    selectedTool = tablet.getPenKind() == 3 ? Tool.ERASER : mode2Tool;
 
     if (mousePressed) {
         if (!pMousePressed) {
@@ -89,7 +91,7 @@ void draw() {
 
 
     drawSketch();
-    drawUI();
+    UI();
 }
 
 void keyPressed() {
@@ -122,17 +124,10 @@ void eraser() {
 void drawSketch() {
     for (Line l : lines) {
         l.draw();
-    }/*
-    for (Event e : events) {
-        print(e.start + " " + e.end + " " + e.tool);
-        for (int i = 0; i < e.erased.size(); i++) {
-            print(e.erased.get(i) + " ");
-        }
-        print("\n");
-    }*/
+    }
 }
-void drawUI() {
 
+void UI() {
     push();
     fill(180);
     rect(0,0,width,64);
@@ -147,6 +142,11 @@ void drawUI() {
     image(penIcon, width/2 - 64,0,64,64);
     image(eraserIcon, width/2,0,64,64);
     pop();
+
+    push();
+    text("mode " + tablet.getPenKind(),width - (new String("mode " + tablet.getPenKind()).length())*20,54);
+    pop();
+
     if (mouseY > 64 && tablet.getPenKind() > 1) {
         noCursor();
         push();
@@ -162,6 +162,14 @@ void drawUI() {
     }
     else {
         cursor(ARROW);
+        if (mousePressed && tablet.getPenKind() == 2) {
+            if (mouseX > width/2 - 64 && mouseX < width/2) {
+                mode2Tool = Tool.PEN;
+            }
+            else if (mouseX > width/2 && mouseX < width/2 + 64) {
+                mode2Tool = Tool.ERASER;
+            }
+        }
     }
 }
 
