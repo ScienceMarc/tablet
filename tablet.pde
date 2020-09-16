@@ -5,13 +5,15 @@ Tablet tablet;
 Event currentEvent = new Event();
 List<Line> lines = new ArrayList<Line>();
 List<Event> events = new ArrayList<Event>();
+
 Tool selectedTool = Tool.PEN;
-Tool mode2Tool = Tool.PEN;
+
+Tool toolModes[] = {Tool.MOVE, Tool.PEN, Tool.ERASER};
 
 PImage penIcon, eraserIcon;
 
 enum Tool {
-    PEN, ERASER;
+    PEN, ERASER, MOVE;
 }
 
 class Line {
@@ -62,7 +64,7 @@ boolean pMousePressed = false;
 
 void draw() {
     background(255);
-    selectedTool = tablet.getPenKind() == 3 ? Tool.ERASER : mode2Tool;
+    selectedTool = toolModes[tablet.getPenKind() - 1];
 
     if (mousePressed) {
         if (!pMousePressed) {
@@ -147,8 +149,15 @@ void UI() {
     text("mode " + tablet.getPenKind(),width - (new String("mode " + tablet.getPenKind()).length())*20,54);
     pop();
 
-    if (mouseY > 64 && tablet.getPenKind() > 1) {
-        noCursor();
+    if (mouseY > 64) {
+        if (tablet.getPenKind() == 1) {
+            cursor(HAND);
+        }
+        else {
+            noCursor();
+        }
+
+
         push();
         noFill();
         stroke(150);
@@ -162,12 +171,12 @@ void UI() {
     }
     else {
         cursor(ARROW);
-        if (mousePressed && tablet.getPenKind() == 2) {
+        if (mousePressed && (tablet.getPenKind() != 3)) {
             if (mouseX > width/2 - 64 && mouseX < width/2) {
-                mode2Tool = Tool.PEN;
+                toolModes[tablet.getPenKind() - 1] = Tool.PEN;
             }
             else if (mouseX > width/2 && mouseX < width/2 + 64) {
-                mode2Tool = Tool.ERASER;
+                toolModes[tablet.getPenKind() - 1] = Tool.ERASER;
             }
         }
     }
